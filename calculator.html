@@ -39,6 +39,12 @@
             --toggle-bg: #f0f0f0;
             --toggle-color: #333333;
             --toggle-hover: #e0e0e0;
+            --history-bg: #f8f8f8;
+            --history-border: #e0e0e0;
+            --history-title: #333333;
+            --history-muted: #888888;
+            --history-item-hover: #eeeeee;
+            --history-result: #667eea;
         }
 
         [data-theme="dark"] {
@@ -61,6 +67,12 @@
             --toggle-bg: #404040;
             --toggle-color: #e8e8e8;
             --toggle-hover: #505050;
+            --history-bg: #252525;
+            --history-border: #404040;
+            --history-title: #e8e8e8;
+            --history-muted: #888888;
+            --history-item-hover: #353535;
+            --history-result: #7b8ee8;
         }
 
         body {
@@ -72,6 +84,14 @@
             background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
             padding: 20px;
             transition: background 0.3s ease;
+        }
+
+        .app {
+            display: flex;
+            gap: 20px;
+            align-items: stretch;
+            max-width: 720px;
+            width: 100%;
         }
 
         .calculator {
@@ -190,49 +210,173 @@
         .zero {
             grid-column: span 2;
         }
+
+        .history-panel {
+            background: var(--calc-bg);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px var(--calc-shadow);
+            padding: 20px;
+            width: 280px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .history-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--history-title);
+        }
+
+        .history-clear {
+            background: transparent;
+            border: none;
+            color: var(--history-muted);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: color 0.2s, background 0.2s;
+        }
+
+        .history-clear:hover {
+            color: var(--clear-bg);
+            background: var(--history-item-hover);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .history-list {
+            list-style: none;
+            overflow-y: auto;
+            flex: 1;
+            max-height: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .history-item {
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border: 1px solid var(--history-border);
+            background: var(--history-bg);
+        }
+
+        .history-item:hover {
+            background: var(--history-item-hover);
+        }
+
+        .history-expression {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--history-muted);
+            word-break: break-all;
+        }
+
+        .history-result {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--history-result);
+            margin-top: 2px;
+        }
+
+        .history-empty {
+            color: var(--history-muted);
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 40px 10px;
+        }
+
+        @media (max-width: 680px) {
+            .app {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .calculator,
+            .history-panel {
+                max-width: 400px;
+                width: 100%;
+            }
+
+            .history-panel {
+                max-height: 240px;
+            }
+
+            .history-list {
+                max-height: 160px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="calculator">
-        <div class="calculator-header">
-            <button class="theme-toggle" id="themeToggle" type="button" aria-label="Переключить тему">
-                <span id="themeIcon">🌙</span>
-                <span id="themeLabel">Тёмная</span>
-            </button>
+    <div class="app">
+        <div class="calculator">
+            <div class="calculator-header">
+                <button class="theme-toggle" id="themeToggle" type="button" aria-label="Переключить тему">
+                    <span id="themeIcon">🌙</span>
+                    <span id="themeLabel">Тёмная</span>
+                </button>
+            </div>
+            <div class="display" id="display">0</div>
+            <div class="buttons">
+                <button class="clear" onclick="clearDisplay()">C</button>
+                <button class="operator" onclick="appendOperator('/')">/</button>
+                <button class="operator" onclick="appendOperator('*')">×</button>
+                <button class="operator" onclick="deleteLast()">⌫</button>
+                
+                <button onclick="appendNumber('7')">7</button>
+                <button onclick="appendNumber('8')">8</button>
+                <button onclick="appendNumber('9')">9</button>
+                <button class="operator" onclick="appendOperator('-')">-</button>
+                
+                <button onclick="appendNumber('4')">4</button>
+                <button onclick="appendNumber('5')">5</button>
+                <button onclick="appendNumber('6')">6</button>
+                <button class="operator" onclick="appendOperator('+')">+</button>
+                
+                <button onclick="appendNumber('1')">1</button>
+                <button onclick="appendNumber('2')">2</button>
+                <button onclick="appendNumber('3')">3</button>
+                <button class="equals" onclick="calculate()" rowspan="2">=</button>
+                
+                <button class="zero" onclick="appendNumber('0')">0</button>
+                <button onclick="appendDecimal()">.</button>
+            </div>
         </div>
-        <div class="display" id="display">0</div>
-        <div class="buttons">
-            <button class="clear" onclick="clearDisplay()">C</button>
-            <button class="operator" onclick="appendOperator('/')">/</button>
-            <button class="operator" onclick="appendOperator('*')">×</button>
-            <button class="operator" onclick="deleteLast()">⌫</button>
-            
-            <button onclick="appendNumber('7')">7</button>
-            <button onclick="appendNumber('8')">8</button>
-            <button onclick="appendNumber('9')">9</button>
-            <button class="operator" onclick="appendOperator('-')">-</button>
-            
-            <button onclick="appendNumber('4')">4</button>
-            <button onclick="appendNumber('5')">5</button>
-            <button onclick="appendNumber('6')">6</button>
-            <button class="operator" onclick="appendOperator('+')">+</button>
-            
-            <button onclick="appendNumber('1')">1</button>
-            <button onclick="appendNumber('2')">2</button>
-            <button onclick="appendNumber('3')">3</button>
-            <button class="equals" onclick="calculate()" rowspan="2">=</button>
-            
-            <button class="zero" onclick="appendNumber('0')">0</button>
-            <button onclick="appendDecimal()">.</button>
-        </div>
+
+        <aside class="history-panel">
+            <div class="history-header">
+                <span class="history-title">Журнал</span>
+                <button class="history-clear" id="historyClear" type="button">Очистить</button>
+            </div>
+            <ul class="history-list" id="historyList"></ul>
+        </aside>
     </div>
 
     <script>
         let display = document.getElementById('display');
         let currentInput = '0';
         let shouldResetDisplay = false;
+        let history = [];
+        const MAX_HISTORY = 50;
 
         const themeToggle = document.getElementById('themeToggle');
+        const historyList = document.getElementById('historyList');
+        const historyClear = document.getElementById('historyClear');
         const themeIcon = document.getElementById('themeIcon');
         const themeLabel = document.getElementById('themeLabel');
 
@@ -256,6 +400,60 @@
 
         themeToggle.addEventListener('click', toggleTheme);
         updateThemeButton(document.documentElement.getAttribute('data-theme'));
+
+        function loadHistory() {
+            try {
+                const saved = localStorage.getItem('calcHistory');
+                if (saved) {
+                    history = JSON.parse(saved);
+                }
+            } catch (error) {
+                history = [];
+            }
+        }
+
+        function saveHistory() {
+            localStorage.setItem('calcHistory', JSON.stringify(history));
+        }
+
+        function renderHistory() {
+            if (history.length === 0) {
+                historyList.innerHTML = '<li class="history-empty">Пока нет операций</li>';
+                return;
+            }
+
+            historyList.innerHTML = history.map(function (entry, index) {
+                return '<li class="history-item" onclick="useHistoryResult(' + index + ')">' +
+                    '<span class="history-expression">' + entry.expression + '</span>' +
+                    '<span class="history-result">= ' + entry.result + '</span>' +
+                    '</li>';
+            }).join('');
+        }
+
+        function addHistoryEntry(expression, result) {
+            history.unshift({ expression: expression, result: result });
+            if (history.length > MAX_HISTORY) {
+                history = history.slice(0, MAX_HISTORY);
+            }
+            saveHistory();
+            renderHistory();
+        }
+
+        function clearHistory() {
+            history = [];
+            saveHistory();
+            renderHistory();
+        }
+
+        function useHistoryResult(index) {
+            currentInput = history[index].result;
+            shouldResetDisplay = true;
+            updateDisplay();
+        }
+
+        historyClear.addEventListener('click', clearHistory);
+        loadHistory();
+        renderHistory();
 
         function updateDisplay() {
             display.textContent = currentInput;
@@ -302,30 +500,34 @@
         }
 
         function calculate() {
+            const displayExpression = currentInput;
+
             try {
-                // Заменяем × на * для вычисления
                 let expression = currentInput.replace(/×/g, '*');
-                
-                // Проверяем на деление на ноль
+
                 if (expression.includes('/0') && !expression.includes('/0.')) {
                     currentInput = 'Ошибка';
+                    addHistoryEntry(displayExpression, 'Ошибка');
                     updateDisplay();
                     shouldResetDisplay = true;
                     return;
                 }
-                
+
                 const result = Function('"use strict"; return (' + expression + ')')();
-                
+
                 if (isNaN(result) || !isFinite(result)) {
                     currentInput = 'Ошибка';
+                    addHistoryEntry(displayExpression, 'Ошибка');
                 } else {
                     currentInput = result.toString();
+                    addHistoryEntry(displayExpression, currentInput);
                 }
-                
+
                 updateDisplay();
                 shouldResetDisplay = true;
             } catch (error) {
                 currentInput = 'Ошибка';
+                addHistoryEntry(displayExpression, 'Ошибка');
                 updateDisplay();
                 shouldResetDisplay = true;
             }
