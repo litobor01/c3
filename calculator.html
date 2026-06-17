@@ -324,6 +324,14 @@
 </head>
 <body>
     <div class="app">
+        <aside class="history-panel">
+            <div class="history-header">
+                <span class="history-title">Журнал</span>
+                <button class="history-clear" id="historyClear" type="button">Очистить</button>
+            </div>
+            <ul class="history-list" id="historyList"></ul>
+        </aside>
+
         <div class="calculator">
             <div class="calculator-header">
                 <button class="theme-toggle" id="themeToggle" type="button" aria-label="Переключить тему">
@@ -357,14 +365,6 @@
                 <button onclick="appendDecimal()">.</button>
             </div>
         </div>
-
-        <aside class="history-panel">
-            <div class="history-header">
-                <span class="history-title">Журнал</span>
-                <button class="history-clear" id="historyClear" type="button">Очистить</button>
-            </div>
-            <ul class="history-list" id="historyList"></ul>
-        </aside>
     </div>
 
     <script>
